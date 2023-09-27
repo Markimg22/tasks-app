@@ -1,10 +1,13 @@
-import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator } from "react-native";
-import { Link, router } from 'expo-router';
-import { Input } from "../src/components/Input";
 import { useState } from "react";
-import { api } from '../src/api/api';
+import { StyleSheet, Text, View, Alert } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Link, router } from 'expo-router';
 
+import { Input } from "../src/components/Input";
+import { api } from '../src/api/api';
+import { Button } from "../src/components/Button";
+
+/** Tela de Login */
 export default function Page() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -12,6 +15,12 @@ export default function Page() {
 
     const disabledButton = email === '' || password === '';
 
+    /** Função para fazer Login:
+     *
+     *  Executa um método POST chamando a rota /login da API, passa os dados (email, password),
+     *  o token retornado da API é armezando na memória do aparelho para fazer outras requisições de tarefas,
+     *  se tudo funcionar corretamente é redirecionado para a tela de Tarefas.
+     */
     const handleLogin = async () => {
         try {
             setLoading(true);
@@ -25,7 +34,7 @@ export default function Page() {
             );
             router.replace('/tasks');
         } catch (error) {
-            console.error(error);
+            Alert.alert('Houve um erro', error.response.data.error);
         } finally {
             setLoading(false);
         }
@@ -47,19 +56,12 @@ export default function Page() {
                 secureTextEntry={true}
                 placeholder="Senha"
             />
-            <TouchableOpacity
-                style={[styles.button, {
-                    backgroundColor: disabledButton || loading ? '#ababab' : '#BB86FC'
-                }]}
+            <Button
+                loading={loading}
                 onPress={handleLogin}
-                disabled={disabledButton || loading}
-            >
-                {loading ? (
-                    <ActivityIndicator size={30} />
-                ) : (
-                    <Text style={styles.textButton}>Entrar</Text>
-                )}
-            </TouchableOpacity>
+                title="Entrar"
+                disabled={disabledButton}
+            />
             <Link href={"/register"} style={styles.link}>Criar uma conta</Link>
         </View>
     );
@@ -85,18 +87,6 @@ const styles = StyleSheet.create({
         marginTop: 10,
         marginBottom: 50,
         width: '70%'
-    },
-    button: {
-        marginTop: 10,
-        padding: 20,
-        borderRadius: 10,
-        width: '90%',
-    },
-    textButton: {
-        color: '#fff',
-        fontWeight: 'bold',
-        fontSize: 22,
-        textAlign: 'center'
     },
     link: {
         textDecorationLine: 'underline',

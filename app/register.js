@@ -1,11 +1,13 @@
-import { StyleSheet, Text, View, TouchableOpacity, Button } from "react-native";
-import { router } from 'expo-router';
-import { Input } from "../src/components/Input";
-import { api } from '../src/api/api';
 import { useState } from 'react';
-import { ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Alert } from "react-native";
+import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { Input } from "../src/components/Input";
+import { Button } from "../src/components/Button";
+import { api } from '../src/api/api';
+
+/** Tela de Cadastro */
 export default function Page() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -17,6 +19,12 @@ export default function Page() {
         email == '' ||
         password === '';
 
+    /** Função para fazer Cadastro:
+    *
+    *  Executa um método POST chamando a rota /register da API, passa os dados (name, email, password),
+    *  o token retornado da API é armezando na memória do aparelho para fazer outras requisições de tarefas,
+    *  se tudo funcionar corretamente é redirecionado para a tela de Tarefas.
+    */
     const handleRegister = async () => {
         try {
             setLoading(true);
@@ -31,7 +39,7 @@ export default function Page() {
             );
             router.replace('/tasks');
         } catch (error) {
-            console.error(error);
+            Alert.alert('Houve um erro', error.response.data.error);
         } finally {
             setLoading(false);
         }
@@ -57,19 +65,12 @@ export default function Page() {
                 secureTextEntry={true}
                 placeholder="Senha"
             />
-            <TouchableOpacity
-                style={[styles.button, {
-                    backgroundColor: disabledButton || loading ? '#ababab' : '#BB86FC',
-                }]}
+            <Button
+                loading={loading}
                 onPress={handleRegister}
-                disabled={disabledButton || loading}
-            >
-                {loading ? (
-                    <ActivityIndicator size={30} />
-                ) : (
-                    <Text style={styles.textButton}>Criar conta</Text>
-                )}
-            </TouchableOpacity>
+                title="Criar conta"
+                disabled={disabledButton}
+            />
             <TouchableOpacity onPress={() => router.back()}>
                 <Text style={styles.link}>Já tenho uma conta</Text>
             </TouchableOpacity>
@@ -90,18 +91,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginTop: 10,
         marginBottom: 30,
-    },
-    button: {
-        marginTop: 10,
-        padding: 20,
-        borderRadius: 10,
-        width: '90%',
-    },
-    textButton: {
-        color: '#fff',
-        fontWeight: 'bold',
-        fontSize: 22,
-        textAlign: 'center'
     },
     link: {
         textDecorationLine: 'underline',
