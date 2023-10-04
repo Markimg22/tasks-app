@@ -1,5 +1,5 @@
 import axios from 'axios';
 
 export const api = axios.create({
-    baseURL: 'https://tasks-api-node.vercel.app'
+    baseURL: 'http://192.168.101.226:8080'
 });

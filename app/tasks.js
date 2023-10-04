@@ -84,6 +84,20 @@ export default function Page() {
      *  lembre de passar o token assim como nos métodos anteriores
      */
     const handleDeleteTask = async (id) => {
+        try {
+            setLoading(true);
+            const accessToken = await AsyncStorage.getItem('@tasks-app/token');
+            await api.delete(`/task/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`
+                }
+            });
+            await handleGetTasks();
+        } catch (error) {
+            Alert.alert('Houve um erro', error.response.data.error);
+        } finally {
+            setLoading(false);
+        }
     }
 
     /** TODO: Função de check Tarefa
@@ -91,6 +105,20 @@ export default function Page() {
      *  lembre de passar o token assim como nos métodos anteriores
      */
     const handleCheckTask = async (id, finished) => {
+        try {
+            setLoading(true)
+            const accessToken = await AsyncStorage.getItem('@tasks-app/token');
+            await api.patch(`/task/${id}`, { finished }, {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            })
+            await handleGetTasks();
+        } catch (error) {
+            Alert.alert('Houve um erro', error.response.data.error);
+        } finally {
+            setLoading(false);
+        }
     }
 
     return (

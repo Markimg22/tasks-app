@@ -37,9 +37,11 @@ export default function Page() {
                 '@tasks-app/token',
                 result.data.accessToken
             );
+            console.log(result.data);
             router.replace('/tasks');
         } catch (error) {
-            Alert.alert('Houve um erro', error.response.data.error);
+            console.error(error)
+            // Alert.alert('Houve um erro', error.response.data.error);
         } finally {
             setLoading(false);
         }
